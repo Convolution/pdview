@@ -1,0 +1,114 @@
+QWidget {
+    background-color: #101010;
+    font: large "Consolas";
+}
+QTableWidget {
+    border: 1px solid #005500;
+    color: #CCCCCC;
+    background-color: #000000;
+    alternate-background-color: #101010;
+    selection-background-color: #005500;
+    gridline-color: #003000;
+}
+QHeaderView::section {
+    border: 1px solid #003000;
+    color: #00CC00;
+    background-color: #000000;
+    alternate-background-color: #101010;
+    font-weight: bold;
+    selection-background-color: #005500;
+}
+QTableCornerButton::section {
+    background-color: #000000;
+}
+QPushButton {
+    height: 30px;
+    border: 1px solid #005500;
+    font-weight: bold;
+    color: #00CC00;
+}
+QPushButton:pressed {
+    border: 1px solid #005500;
+    font-weight: bold;
+    color: #00FF00;
+    background-color: #002200;
+}
+
+QScrollBar:horizontal {
+    border: 1px solid green;
+    background: #101010;
+    height: 15px;
+    margin: 0px 18px 0 18px;
+}
+
+QScrollBar::handle:horizontal {
+    border: 1px solid green;
+    background: #005500;
+    min-width: 20px;
+}
+
+QScrollBar::add-line:horizontal {
+    border: 1px solid green;
+    background: #005500;
+    width: 16px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    background: #005500;
+    width: 16px;
+    subcontrol-position: top left;
+    subcontrol-origin: margin;
+    border: 1px solid green;
+    position: absolute;
+    right: 20px;
+}
+
+QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal {
+    width: 5px;
+    height: 5px;
+    background: #CCCCCC;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
+QScrollBar:vertical {
+    border: 1px solid green;
+    background: #101010;
+    width: 15px;
+    margin: 18px 0 18px 0;
+}
+QScrollBar::handle:vertical {
+    border: 1px solid green;
+    background: #005500;
+    min-height: 20px;
+}
+QScrollBar::add-line:vertical {
+    border: 1px solid green;
+    background: #005500;
+    height: 16px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    border: 1px solid green;
+    background: #005500;
+    height: 16px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+    width: 5px;
+    height: 5px;
+    background: #CCCCCC;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+
