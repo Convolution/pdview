@@ -8,13 +8,13 @@ from PyQt5.QtGui import QFont, QPalette, QColor
 from PyQt5.QtCore import Qt
 
 
-class pdvWindow(QWidget):
+class PDViewWindow(QWidget):
     def __init__(self, df):
         super().__init__()
         self.row_height = 25
         self.col_width = 100
         self.max_rows = 100
-        self.max_cols = 100 
+        self.max_cols = 100
         self.row_start = 0
         self.row_stop = 0
         self.fmt_default = "{0}"
@@ -142,34 +142,20 @@ class pdvWindow(QWidget):
         self.load_df()
 
 
-class PDView():
-    def __init__(self, df):
-        self.df = df
-        self.app = QApplication([])
-        self.ui = pdvWindow(df)
+def pdview(df, max_rows=100, max_cols=100, row_height=25, col_width=100,
+           float_fmt="{:.3f}", int_fmt="{:.0f}", default_fmt="{0}"):
+    app = QApplication([])
+    ui = PDViewWindow(df)
 
-    def set_int_fmt(self, fmt):
-        self.ui.set_int_fmt(fmt)
-
-    def set_float_fmt(self, fmt):
-        self.ui.set_float_fmt(fmt)
-
-    def set_max_rows(self, nrows):
-        self.ui.set_max_rows(nrows)
-
-    def set_max_cols(self, ncols):
-        self.ui.set_max_cols(ncols)
-
-    def set_row_height(self, row_height):
-        self.ui.set_row_height(row_height)
-
-    def set_col_width(self, col_width):
-        self.ui.set_col_width(col_width)
-
-    def show(self):
-        self.ui.load_df()
-        self.ui.show()
-        sys.exit(self.app.exec_())
+    ui.set_max_rows(max_rows)
+    ui.set_max_cols(max_cols)
+    ui.set_row_height(row_height)
+    ui.set_col_width(col_width)
+    ui.set_int_fmt(int_fmt)
+    ui.set_float_fmt(float_fmt)
+    ui.load_df()
+    ui.show()
+    sys.exit(app.exec_())
 
 
 def main():
