@@ -18,6 +18,7 @@ class pdvWindow(QWidget):
         self.fmt_default = "{0}"
         self.fmt_int = "{:.0f}"
         self.fmt_float = "{:.5f}"
+        self.df = None
         self.initUI()
 
     def initUI(self):
@@ -33,7 +34,7 @@ class pdvWindow(QWidget):
 
         self.vbox.addWidget(self.tbview)
         self.vbox.addLayout(self.buttonBox)
-    
+
         with open('styleSheet.css', 'r') as f:
             styleSheet = f.read()
 
@@ -44,11 +45,11 @@ class pdvWindow(QWidget):
         self.tbview.horizontalHeader().setHighlightSections(True)
         self.tbview.verticalHeader().setHighlightSections(True)
 
-    def set_int_fmt(fmt):
+    def set_int_fmt(self, fmt):
         fmt.format(123)  # Throws if this can't format an int
         self.fmt_int = fmt
 
-    def set_float_fmt():
+    def set_float_fmt(self, fmt):
         fmt.format(np.pi)  # Throw if this can't format a float
         self.fmt_float = fmt
 
@@ -77,8 +78,6 @@ class pdvWindow(QWidget):
         for irow in range(nrows):
             self.tbview.setRowHeight(irow, self.row_height)
 
-
-
         for irow in range(nrows):
             for icol in range(ncols):
                 val = df.iloc[irow, icol]
@@ -93,6 +92,7 @@ class pdvWindow(QWidget):
 
                 self.tbview.setItem(irow, icol,
                                     QTableWidgetItem(fmt_str.format(val)))
+        self.df = df
 
 
 class PDView():
@@ -104,7 +104,7 @@ class PDView():
     def set_int_fmt(self, fmt):
         self.ui.set_int_fmt(fmt)
 
-    def set_float_fmt(self, float):
+    def set_float_fmt(self, fmt):
         self.ui.set_float_fmt(fmt)
 
     def set_max_rows(self, nrows):
@@ -124,7 +124,7 @@ class PDView():
         sys.exit(self.app.exec_())
 
 
-if __name__ == '__main__':
+def main():
     m = 100
     n = 100
     df = pd.DataFrame(
@@ -134,3 +134,7 @@ if __name__ == '__main__':
         )
     p = PDView(df)
     p.show()
+
+if __name__ == '__main__':
+    main()
+
