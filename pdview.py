@@ -47,12 +47,16 @@ class pdvWindow(QWidget):
         self.tbview.horizontalHeader().setAlternatingRowColors(True)
         self.tbview.horizontalHeader().setHighlightSections(True)
         self.tbview.verticalHeader().setHighlightSections(True)
+
         self.tbview.setRowCount(self.max_rows)
         self.tbview.setColumnCount(self.max_cols)
 
         # Connect the buttons
         self.nextButton.clicked.connect(self.load_next)
         self.prevButton.clicked.connect(self.load_prev)
+
+    def set_df(self, df):
+        self.df = df
 
     def set_int_fmt(self, fmt):
         fmt.format(123)  # Throws if this can't format an int
@@ -64,9 +68,11 @@ class pdvWindow(QWidget):
 
     def set_max_rows(self, nrows):
         self.max_rows = nrows
+        self.tbview.setRowCount(self.max_rows)
 
     def set_max_cols(self, ncols):
         self.max_cols = ncols
+        self.tbview.setColumnCount(self.max_cols)
 
     def set_row_height(self, row_height):
         self.row_height = row_height
@@ -138,9 +144,9 @@ class pdvWindow(QWidget):
 
 class PDView():
     def __init__(self, df):
+        self.df = df
         self.app = QApplication([])
         self.ui = pdvWindow(df)
-        self.ui.load_df()
 
     def set_int_fmt(self, fmt):
         self.ui.set_int_fmt(fmt)
@@ -161,6 +167,7 @@ class PDView():
         self.ui.set_col_width(col_width)
 
     def show(self):
+        self.ui.load_df()
         self.ui.show()
         sys.exit(self.app.exec_())
 
