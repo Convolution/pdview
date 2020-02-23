@@ -1,4 +1,5 @@
 import sys
+import os
 import numpy as np
 import pandas as pd
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget, QPushButton, \
@@ -37,7 +38,10 @@ class PDViewWindow(QWidget):
         self.vbox.addWidget(self.tbview)
         self.vbox.addLayout(self.buttonBox)
 
-        with open('stylesheet.css', 'r') as f:
+        stylesheet_uri = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), 'stylesheet.css')
+
+        with open(stylesheet_uri, 'r') as f:
             styleSheet = f.read()
 
         # Configure the table widget
@@ -158,17 +162,13 @@ def pdview(df, max_rows=100, max_cols=100, row_height=25, col_width=100,
     sys.exit(app.exec_())
 
 
-def main():
-    m = 250
+if __name__ == '__main__':
+    m = 1000
     n = 10
     df = pd.DataFrame(
         np.random.rand(m, n),
         index=np.arange(0, m),
-        columns=['col_' + str(x) for x in range(n)]
+        columns=['C' + str(x) for x in range(n)]
         )
-    p = PDView(df)
-    p.show()
-
-if __name__ == '__main__':
-    main()
+    pdview(df)
 
