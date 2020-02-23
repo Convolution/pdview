@@ -9,16 +9,18 @@ from PyQt5.QtCore import Qt
 
 
 class pdvWindow(QWidget):
-    def __init__(self):
+    def __init__(self, df):
         super().__init__()
         self.row_height = 25
         self.col_width = 100
-        self.max_rows = 500
+        self.max_rows = 100
         self.max_cols = 100 
+        self.row_start = 0
+        self.row_stop = 0
         self.fmt_default = "{0}"
         self.fmt_int = "{:.0f}"
         self.fmt_float = "{:.5f}"
-        self.df = None
+        self.df = df
         self.initUI()
 
     def initUI(self):
@@ -35,15 +37,22 @@ class pdvWindow(QWidget):
         self.vbox.addWidget(self.tbview)
         self.vbox.addLayout(self.buttonBox)
 
-        with open('styleSheet.css', 'r') as f:
+        with open('stylesheet.css', 'r') as f:
             styleSheet = f.read()
 
+        # Configure the table widget
         self.setStyleSheet(styleSheet)
         self.tbview.setStyleSheet(styleSheet)
         self.tbview.setAlternatingRowColors(True)
         self.tbview.horizontalHeader().setAlternatingRowColors(True)
         self.tbview.horizontalHeader().setHighlightSections(True)
         self.tbview.verticalHeader().setHighlightSections(True)
+        self.tbview.setRowCount(self.max_rows)
+        self.tbview.setColumnCount(self.max_cols)
+
+        # Connect the buttons
+        self.nextButton.clicked.connect(self.load_next)
+        self.prevButton.clicked.connect(self.load_prev)
 
     def set_int_fmt(self, fmt):
         fmt.format(123)  # Throws if this can't format an int
@@ -65,21 +74,40 @@ class pdvWindow(QWidget):
     def set_col_width(self, col_width):
         self.col_width = col_width
 
-    def load_df(self, df):
-        nrows = df.shape[0] if df.shape[0] < self.max_rows else self.max_rows
-        ncols = df.shape[1] if df.shape[1] < self.max_cols else self.max_cols
-        self.tbview.setRowCount(nrows)
-        self.tbview.setColumnCount(ncols)
-        self.tbview.setHorizontalHeaderLabels(df.columns[:nrows].astype('str'))
-        self.tbview.setVerticalHeaderLabels(df.index[:ncols].astype('str'))
+    def load_df(self):
+        df = self.df
+        if df is None:
+            return
 
-        for icol in range(ncols):
+        if self.row_start >= df.shape[0]:  # End of df reached
+            return
+
+        self.row_stop = df.shape[0] \
+                if df.shape[0] - self.row_start < self.max_rows \
+                else self.row_start + self.max_rows
+
+        self.col_stop = df.shape[1] \
+                if df.shape[1] < self.max_cols else self.max_cols
+
+        # Table headers and dimensions
+        self.tbview.setRowCount(self.row_stop - self.row_start)
+        self.tbview.setColumnCount(self.col_stop)
+        self.tbview.setHorizontalHeaderLabels(df.columns[:self.col_stop].astype('str'))
+        self.tbview.setVerticalHeaderLabels(df.index[self.row_start:self.row_stop].astype('str'))
+
+        for icol in range(self.col_stop):
             self.tbview.setColumnWidth(icol, self.col_width)
-        for irow in range(nrows):
+        for irow in range(self.row_stop):
             self.tbview.setRowHeight(irow, self.row_height)
 
-        for irow in range(nrows):
-            for icol in range(ncols):
+        # Copy df values to the cells
+        for irow in range(self.max_rows):
+            for icol in range(self.max_cols):
+                self.tbview.setItem(irow, icol, QTableWidgetItem())
+
+
+        for irow in range(self.row_start, self.row_stop):
+            for icol in range(self.col_stop):
                 val = df.iloc[irow, icol]
 
                 fmt_str = self.fmt_default
@@ -89,17 +117,30 @@ class pdvWindow(QWidget):
                         fmt_str = self.fmt_int
                     elif val.dtype in [np.float]:
                         fmt_str = self.fmt_float
+                try:
+                    self.tbview.item(irow - self.row_start, icol).setText(fmt_str.format(val))
+                except:
+                    from ipdb import set_trace
+                    set_trace()
 
-                self.tbview.setItem(irow, icol,
-                                    QTableWidgetItem(fmt_str.format(val)))
-        self.df = df
+        self.tbview.update()
+
+    def load_prev(self):
+        if self.row_start > 0:
+            self.row_start -= self.max_rows
+        self.load_df()
+
+    def load_next(self):
+        if self.row_stop < self.df.shape[0]:
+            self.row_start = self.row_stop
+        self.load_df()
 
 
 class PDView():
     def __init__(self, df):
         self.app = QApplication([])
-        self.ui = pdvWindow()
-        self.ui.load_df(df)
+        self.ui = pdvWindow(df)
+        self.ui.load_df()
 
     def set_int_fmt(self, fmt):
         self.ui.set_int_fmt(fmt)
@@ -125,8 +166,8 @@ class PDView():
 
 
 def main():
-    m = 100
-    n = 100
+    m = 250
+    n = 10
     df = pd.DataFrame(
         np.random.rand(m, n),
         index=np.arange(0, m),
